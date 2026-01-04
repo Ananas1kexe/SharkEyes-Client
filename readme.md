@@ -102,6 +102,77 @@ SharkEyes analyzes behavioral signals to detect automated activity, **NOT to tra
 | **Automation Indicators** | Presence of automation tool signatures | Detects Puppeteer, Playwright, Selenium, and other bot frameworks |
 | **Environment Anomalies** | Headless browser detection, missing browser features | Automated tools lack normal browser capabilities |
 
+## 🔬 Technical Details: What Data Points We Check
+
+Below is a detailed breakdown of **what specific browser properties we check** and **why each is important for bot detection**. We emphasize that we **do not read, store, or access any personal content**—we only check for the **presence and consistency** of browser features.
+
+### Browser Environment Checks
+
+| Data Point | What We Check | Purpose | Privacy Note |
+|------------|---------------|---------|--------------|
+| **User Agent** | Browser identification string | Verify browser consistency and detect spoofed identities | Standard browser info, not personal data |
+| **Platform** | Operating system name | Cross-check with other signals for consistency | Generic OS info (e.g., "Win32", "MacIntel") |
+| **Languages** | Browser language preferences | Verify natural browser configuration | Language settings only, not content |
+| **Timezone** | System timezone setting | Detect timezone/location mismatches typical of bots | Timezone identifier only (e.g., "America/New_York") |
+| **Vendor** | Browser vendor string | Identify browser manufacturer | Public browser property |
+
+### Hardware & Capability Checks
+
+| Data Point | What We Check | Purpose | Privacy Note |
+|------------|---------------|---------|--------------|
+| **Hardware Concurrency** | Number of CPU cores | Detect virtual environments and emulators | Hardware spec only, no personal data |
+| **Device Memory** | RAM available to browser | Identify virtual machines and automation environments | Memory amount only, no usage data |
+| **Screen Resolution** | Display width/height | Detect headless browsers with fake resolutions | Screen size only, not screen content |
+| **Pixel Ratio** | Display pixel density | Verify device consistency | Display property only |
+| **Touch Support** | Touch capability detection | Verify mobile device authenticity | Boolean check only |
+| **Window vs Screen Size** | Browser window dimensions vs screen | Detect automation tools running in hidden windows | Dimensions only, not window content |
+
+### Browser Feature Checks
+
+| Data Point | What We Check | Purpose | Privacy Note |
+|------------|---------------|---------|--------------|
+| **Cookie Enabled** | Whether cookies can be used | Bots often disable cookies; we check **availability only** | ✅ We check IF cookies work, **NOT cookie content** |
+| **Storage Test** | LocalStorage functionality | Verify browser has normal storage capabilities | ✅ We test with a temporary test value, **NOT read existing data** |
+| **WebGL Info** | Graphics renderer details | Detect headless browsers and virtual environments | GPU info only, used for consistency checks |
+| **Plugins Length** | Number of browser plugins | Headless browsers typically have 0 plugins | ✅ Plugin count only, **NOT plugin names or data** |
+| **Window.Chrome** | Presence of Chrome object | Verify Chromium-based browser authenticity | Boolean presence check |
+
+### Automation Detection
+
+| Data Point | What We Check | Purpose | Privacy Note |
+|------------|---------------|---------|--------------|
+| **navigator.webdriver** | WebDriver automation flag | Directly indicates Selenium/WebDriver usage | Standard automation detection flag |
+| **Playwright Detection** | Playwright framework signatures | Detect Playwright automation tool | Checks for framework-specific properties |
+| **Browser Type Detection** | Browser engine and brand | Identify browser family and detect spoofing | Browser identification only |
+
+### Permission API Checks
+
+| Data Point | What We Check | Purpose | Privacy Note |
+|------------|---------------|---------|--------------|
+| **Permissions State** | Camera, microphone, geolocation, notifications permission status | Verify browser has functional Permission API | ✅ We check permission **state** (granted/denied/prompt), **NOT access actual devices or location** |
+
+### Behavioral Event Tracking
+
+| Event Type | What We Record | Purpose | Privacy Note |
+|------------|----------------|---------|--------------|
+| **Mouse Move** | Coordinates and timestamp | Detect natural human movement patterns | ✅ Movement patterns only, **NOT what you're clicking on** |
+| **Click** | Coordinates and timestamp | Analyze click patterns and timing | ✅ Click timing only, **NOT what elements you click** |
+| **Scroll** | Timestamp only | Verify natural scrolling behavior | ✅ Scroll timing only, **NOT page content** |
+| **Keyboard** | Timestamp only | Detect natural typing patterns | ✅ Timing only, **NOT what you type** |
+| **Touch Events** | Touch coordinates and timestamp | Mobile device interaction verification | ✅ Touch patterns only, **NOT touched content** |
+| **Focus/Blur** | Timestamp only | Track window focus patterns | ✅ Timing only, **NOT focused content** |
+| **Input** | Timestamp only | Detect form interaction | ✅ Timing only, **NOT input values** |
+| **Paste** | Timestamp only | Identify paste actions | ✅ Event timing only, **NOT pasted content** |
+
+### Session Metadata
+
+| Data Point | What We Check | Purpose | Privacy Note |
+|------------|---------------|---------|--------------|
+| **Time on Page** | Duration since page load | Bots submit forms instantly | Time duration only |
+| **Input Count** | Number of form fields | Form complexity analysis | Field count only, not field content |
+| **Headless Flag** | Headless browser detection | Identify automation environments | Boolean flag |
+
+
 ### 🔒 Privacy & Data Handling
 
 **We prioritize your privacy:**
