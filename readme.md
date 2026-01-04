@@ -1,5 +1,9 @@
 # 🦈 SharkEyes Client
 
+
+## start here
+[`Start Here`](CONTRIBUTING.md)
+
 **Advanced client-side bot detection and form protection**
 
 SharkEyes Client is a lightweight JavaScript solution that protects your forms from automated attacks by analyzing behavioral patterns in real-time. All verification decisions are made server-side to ensure security and prevent bypass attempts.
