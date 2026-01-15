@@ -1,23 +1,29 @@
 {
   "name": "SharkEyes",
-  "version": "1.0.0-beta",
+  "version": "1.0.0-MVP",
   "build_number": 1,
-  "release_date": "2026-01-04",
+  "release_date": "2026-01-18",
   "is_stable": true,
   "features": [
     {
       "id": 1,
-      "description": "Описание первой функции"
+      "type": "PoW",
+      "description": "Implements a Proof of Work system to verify client requests without collecting any personal data, ensuring secure and bot-resistant interactions."
     },
     {
       "id": 2,
-      "description": "Описание второй функции"
+      "type": "Visible",
+      "description": "A user-facing CAPTCHA widget that requires explicit interaction to verify the client is human. Only the minimal information necessary for verification is collected, with no personal data used."
+    },
+    {
+      "id": 3,
+      "type": "Invisible",
+      "description": "An invisible CAPTCHA system running in the background that analyzes user actions and browser data. Only the minimal information necessary for verification is collected, with no personal data used."
     }
   ],
   "config": {
     "base_url": "https://sharkeyes.dev/",
-    "api_endpoint_verify": "https://api.sharkeyes.dev/api/v1/verify",
-    "api_endpoint_token": "https://api.sharkeyes.dev/api/v1/token"
+    "api_url": "https://api.sharkeyes.dev"
   },
   "metadata": {
     "author": "SharkEyes Labs",
