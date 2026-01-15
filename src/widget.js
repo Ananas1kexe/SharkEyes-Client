@@ -1,7 +1,34 @@
+// === SHARKEYES ANTI-BOT PROTECTION ===
+// We care about your privacy and security.
+// All data is collected ONLY for bot detection and:
+// - Is never shared with third parties
+// - Is not used for tracking or analytics
+// - Is processed anonymously, without any personal information
+// - Is deleted immediately after verification
+// Our goal is to make the web safer without compromising your privacy.
+// Learn more about our privacy policy: https://sharkeyes.dev/trust/privacy
+// Explore the client-side code here: https://github.com/Ananas1kexe/SharkEyes-Client
+
+
+
+// --- вверху widget.js, глобально
 const API_URL = "https://api.sharkeyes.dev/api/v1/verify";
 const TOKEN_URL = "https://api.sharkeyes.dev/api/v1/token";
 
+async function fetchWithTimeout(url, options = {}, timeout = 8000) {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
 
+    try {
+        const res = await fetch(url, {
+            ...options,
+            signal: controller.signal
+        });
+        return res;
+    } finally {
+        clearTimeout(id);
+    }
+}
 
 function detectBrowser() {
     let engine = "unknown";
@@ -73,11 +100,6 @@ function detectBrowser() {
     // ---------- EXTRA FLAGS (полезно для антибота) ----------
     const automation = {
         webdriver: navigator.webdriver === true,
-        permissionsAnomaly:
-            navigator.permissions &&
-            navigator.permissions.query
-                ? false
-                : true,
         pluginsEmpty:
             navigator.plugins && navigator.plugins.length === 0,
     };
@@ -96,7 +118,7 @@ function detectBrowser() {
 async function getServerToken() {
   // запросит токен у сервера; сервер при этом может выставить cookie (HttpOnly) в ответе
   try {
-    const res = await fetch(TOKEN_URL, { credentials: 'include' }); // include чтобы получить cookie
+    const res = await fetch(TOKEN_URL); 
     if (!res.ok) return null;
     const data = await res.json()
     return data.token;
@@ -107,160 +129,64 @@ async function getServerToken() {
 
 async function collectClientFingerprints() {
   const nav = navigator || {};
-  const perm = {};
   
-  try {
-    const p = navigator.permissions;
-    if (p) {
-      const perms = ['camera','microphone','geolocation','notifications'];
-      for (const name of perms) {
-        try {
-          const q = await p.query({name});
-          perm[name] = q.state;
-        } catch { perm[name] = 'unknown'; }
-      }
-    }
-  } catch (e) {}
 
   // touch + pointer info
   const touch = ('ontouchstart' in window) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0);
-  let webglInfo = null;
+    let webglInfo = null;
     try {
-      const canvas = document.createElement('canvas');
-      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-      if (gl) {
-        const dbgInfo = gl.getExtension('WEBGL_debug_renderer_info');
-        if (dbgInfo) {
-          webglInfo = {
-            vendor: gl.getParameter(dbgInfo.UNMASKED_VENDOR_WEBGL),
-            renderer: gl.getParameter(dbgInfo.UNMASKED_RENDERER_WEBGL)
-          };
-        } else {
-          webglInfo = {
-            vendor: gl.getParameter(gl.VENDOR),
-            renderer: gl.getParameter(gl.RENDERER)
-          };
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (gl) {
+            const dbgInfo = gl.getExtension('WEBGL_debug_renderer_info');
+            if (dbgInfo) {
+                webglInfo = {
+                    vendor: gl.getParameter(dbgInfo.UNMASKED_VENDOR_WEBGL),
+                    renderer: gl.getParameter(dbgInfo.UNMASKED_RENDERER_WEBGL)
+                };
+            } else {
+                webglInfo = {
+                    vendor: gl.getParameter(gl.VENDOR),
+                    renderer: gl.getParameter(gl.RENDERER)
+                };
+            }
         }
-      }
     } catch (e) {
-      webglInfo = { error: e.message };
+        webglInfo = { error: e.message };
     }
 
     let storageTest = false;
     try {
-      localStorage.setItem("__shk_test", "1");
-      storageTest = localStorage.getItem("__shk_test") === "1";
-      localStorage.removeItem("__shk_test");
+      // Temporary localStorage availability check.
+      // Used to detect restricted or sandboxed environments (e.g. private mode, bots).
+      // No user data is stored and the key is removed immediately.
+
+      const key = "sharkeyes_temp_storage_test";
+
+      localStorage.setItem(key, "1");
+      storageTest = localStorage.getItem(key) === "1";
+      localStorage.removeItem(key);
     } catch(e) {
       storageTest = false;
     }
     const isPlaywrightFlag = (() => {
-      try {
-        // 1. Явные глобальные объекты/имена, которые оставляет Playwright
-        if (window._playwright) return true;
-        if (window.__playwright) return true;
-        if (window.__pw) return true;
-        if (window.__pw_manual) return true;
-        if (window.__PW_INSTANCE) return true;
-        if (window.__PLAYWRIGHT_EVALUATION__) return true;
-
-        // 2. Проверка через Object.getOwnPropertyNames - Playwright может добавлять скрытые свойства
-        const windowProps = Object.getOwnPropertyNames(window);
-        if (windowProps.some(p => /playwright|__pw|__PW/i.test(p))) return true;
-
-        // 3. Проверка на наличие DevTools Protocol в window
-        if (window.chrome && window.chrome.runtime && window.chrome.runtime.onConnect) {
-          try {
-            const runtimeId = window.chrome.runtime.id;
-            if (!runtimeId || runtimeId.length < 10) {
-              if (!window.chrome.runtime.getManifest) return true;
-            }
-          } catch(e) {}
-        }
-
-        // 4. Проверка на патчи в Function.prototype
-        const funcString = Function.prototype.toString.toString();
-        if (funcString.indexOf('[native code]') === -1 && funcString.length < 100) {
-          return true;
-        }
-
-        // 5. Проверка на отсутствие типичных браузерных свойств
-        if (!window.Notification) return true;
-
-        // 6. Проверка на типичные артефакты DevTools Protocol
         try {
-          if (window.navigator && !window.navigator.webdriver && navigator.webdriver) return true;
-        } catch(e) {}
-
-        // 7. Проверка на типичные свойства navigator
-        if (navigator.__proto__ && Object.keys(navigator.__proto__).length < 10) return true;
-
-        // 8. Проверка на отсутствие window.chrome
-        if (!window.chrome && !window.safari && navigator.userAgent.includes('Chrome')) {
-          if (!window.chrome && navigator.vendor === 'Google Inc.') return true;
-        }
-
-        // 9. Проверка Permission API
-        try {
-          const perms = navigator.permissions;
-          if (perms) {
-            const query = perms.query.toString();
-            if (query.indexOf('[native code]') === -1) return true;
-          }
-        } catch(e) {}
-
-        // 10. Проверка Object.getOwnPropertyDescriptor
-        try {
-          const desc = Object.getOwnPropertyDescriptor;
-          const descString = desc.toString();
-          if (descString.indexOf('[native code]') === -1) return true;
-        } catch(e) {}
-
-        // 11. Проверка на "Playwright" в UA
-        if (typeof navigator.userAgent === 'string' && /playwright/i.test(navigator.userAgent)) return true;
-
-        // 12. Проверка webdriver флага
-        if (navigator.webdriver === true) return true;
-
-        // 13. Проверка document
-        try {
-          if (document.documentElement && document.documentElement.getAttribute('webdriver')) return true;
-        } catch(e) {}
-
-        // 14. Проверка типичных браузерных методов
-        if (typeof window.Blob === 'undefined') return true;
-        if (typeof window.FileReader === 'undefined') return true;
-
-        // 15. Проверка performance API
-        try {
-          const perfEntries = performance.getEntriesByType('navigation');
-          if (perfEntries.length === 0 && document.readyState === 'complete') {
-            return true;
-          }
-        } catch(e) {}
-
-        return false;
-      } catch (e) {
-        return true;
-      }
+            if (window._playwright || window.__playwright || window.__pw) return true;
+            if (window.__pw_manual || window.__PW_INSTANCE) return true;
+            if (window.__PLAYWRIGHT_EVALUATION__) return true;
+            const windowProps = Object.getOwnPropertyNames(window);
+            if (windowProps.some(p => /playwright|__pw|__PW/i.test(p))) return true;
+            if (navigator.webdriver === true) return true;
+            if (typeof navigator.userAgent === 'string' && /playwright/i.test(navigator.userAgent)) return true;
+            return false;
+        } catch (e) { return true; }
     })();
-
-  const browserType = detectBrowser();
+    const browserType = detectBrowser();
 
   return {
     userAgent: nav.userAgent,
-    platform: nav.platform,
-    languages: nav.languages,
-    hwConcurrency: nav.hardwareConcurrency,
-    deviceMemory: nav.deviceMemory || null,
-    cookieEnabled: nav.cookieEnabled,
-    pluginsLength: (navigator.plugins && navigator.plugins.length) || 0,
     webdriver: !!nav.webdriver,
-    vendor: nav.vendor || null,
     touch,
-    permissions: perm,
-    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    hasWindowChrome: !!window.chrome,
     webgl: webglInfo,
     storageTest,
     isPlaywright: isPlaywrightFlag,
@@ -274,37 +200,78 @@ async function collectClientFingerprints() {
 
 (function(){
   const startTime = performance.now();
+  const MAX_EVENTS = 150; 
   const events = [];
   let lastMove = 0;
   const isHeadless = navigator.webdriver;
+  
+  // Interaction counters (no content)
+  const interactionStats = {
+    mouseMoves: 0,
+    clicks: 0,
+    keypresses: 0,
+    scrolls: 0,
+    touches: 0,
+    inputs: 0
+  };
 
-  function record(type, e) {
+  // Record ONLY timing and type, NO coordinates or content
+  function record(type) {
+    if (events.length >= MAX_EVENTS) return;
+
+    const now = performance.now();
+    const timeSinceStart = now - startTime;
+    
+    // Store only timing pattern, not coordinates
     events.push({
       type,
-      t: performance.now() - startTime,
-      x: e?.clientX || null,
-      y: e?.clientY || null
+      t: timeSinceStart
+      // NO x, y coordinates
+      // NO key values
+      // NO input content
     });
+    
+    // Update counters
+    if (type === "mousemove") interactionStats.mouseMoves++;
+    else if (type === "click") interactionStats.clicks++;
+    else if (type === "keydown") interactionStats.keypresses++;
+    else if (type === "scroll") interactionStats.scrolls++;
+    else if (type.startsWith("touch")) interactionStats.touches++;
+    else if (type === "input") interactionStats.inputs++;
   }
 
-  window.addEventListener("mousemove", e => {
+  // Mouse movement - NO coordinates stored, just fact of movement
+  window.addEventListener("mousemove", () => {
     const now = performance.now();
-    if (now - lastMove > 30) {
-      record("mousemove", e);
+    if (now - lastMove > 100) { // Throttle to reduce data
+      record("mousemove");
       lastMove = now;
     }
   }, {passive:true});
 
-  document.addEventListener("click", e => record("click", e));
-  document.addEventListener("keydown", e => record("keydown", {}));
-  window.addEventListener("scroll", e => record("scroll", {}));
-  document.addEventListener("focus", e => record("focus", {}));
-  document.addEventListener("blur", e => record("blur", {}));
-  document.addEventListener("input", e => record("input", {}));
-  document.addEventListener("touchstart", e => record("touchstart", e));
-  document.addEventListener("touchend", e => record("touchend", e));
-  document.addEventListener("touchmove", e => record("touchmove", e));
-  document.addEventListener("paste", e => record("paste", {}));
+  // Clicks - NO coordinates
+  document.addEventListener("click", () => record("click"));
+  
+  // Keypresses - NO key values or content
+  document.addEventListener("keydown", () => record("keydown"));
+  
+  // Scrolls - NO position
+  window.addEventListener("scroll", () => record("scroll"));
+  
+  // Focus/blur - timing only
+  document.addEventListener("focus", () => record("focus"));
+  document.addEventListener("blur", () => record("blur"));
+  
+  // Input - NO content, just fact of input
+  document.addEventListener("input", () => record("input"));
+  
+  // Touch events - NO coordinates
+  document.addEventListener("touchstart", () => record("touchstart"));
+  document.addEventListener("touchend", () => record("touchend"));
+  document.addEventListener("touchmove", () => record("touchmove"));
+  
+  // Paste - NO content
+  document.addEventListener("paste", () => record("paste"));
 
   // === ОБРАБОТЧИК ОТПРАВКИ ФОРМЫ ===
   document.addEventListener("submit", async function(e){
@@ -340,11 +307,11 @@ async function collectClientFingerprints() {
             innerW: window.innerWidth,
             innerH: window.innerHeight
           },
+          widget_type: "invisible",
+          interaction_stats: interactionStats,
           clientInfo
         };
 
-
-        
         const body = { 
             events, 
             meta, 
@@ -354,7 +321,6 @@ async function collectClientFingerprints() {
         const res = await fetch(API_URL, {
           method: "POST",
           headers: {"Content-Type": "application/json"},
-          credentials: 'include',
           body: JSON.stringify(body)
         });
 
@@ -362,8 +328,8 @@ async function collectClientFingerprints() {
           form.submit();
         } else {
           const data = await res.json().catch(() => ({}));
-          const skyId = data.detail?.sky_id ?? "?";
-          const score = data.detail?.score ?? "?";
+          const skyId = (data.detail?.sky_id ?? data.sky_id) ?? "?";
+          const score = (data.detail?.score ?? data.score) ?? "?";
           showSharkAlert(skyId, score, "https://sharkeyes.dev/");
         }
     } catch (err) {
@@ -437,7 +403,7 @@ async function collectClientFingerprints() {
     `;
     document.head.appendChild(style);
   }
-
+  
   function showSharkAlert(skyId, score, link) {
     injectStyles();
 
@@ -447,14 +413,24 @@ async function collectClientFingerprints() {
     const alertBox = document.createElement("div");
     alertBox.id = "sharkeyes-alert";
     alertBox.className = "shk-alert";
+
     alertBox.innerHTML = `
       <h3>❌ Test Failed</h3>
-      <p>Sky ID: <b>${skyId}</b></p>
-      <p>Score: <b>${score}</b></p>
-      ${link ? `<p><a href="${link}" target="_blank">SharkEyes Security</a></p>` : ""}
-      <button>Close</button>
+      <p>Sky ID: <b id="shk-id-val"></b></p>
+      <p>Score: <b id="shk-score-val"></b></p>
+      ${link ? `<p><a href="#" id="shk-link" target="_blank">SharkEyes Security</a></p>` : ""}
+      <button id="shk-close">Close</button>
     `;
-    alertBox.querySelector("button").onclick = () => alertBox.remove();
+
+    alertBox.querySelector("#shk-id-val").textContent = skyId;
+    alertBox.querySelector("#shk-score-val").textContent = score;
+    
+    if (link) {
+      const linkEl = alertBox.querySelector("#shk-link");
+      linkEl.href = link;
+    }
+
+    alertBox.querySelector("#shk-close").onclick = () => alertBox.remove();
     document.body.appendChild(alertBox);
   }
 
