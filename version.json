@@ -4,6 +4,10 @@
   "build_number": 1,
   "release_date": "2026-01-18",
   "is_stable": true,
+  "repository_status": {
+    "version": 1,
+    "note": "This is the initial public version of the SharkEyes repository. Some internal components, auxiliary files, and tooling are not yet published and will be added in future updates."
+  },
   "features": [
     {
       "id": 1,
