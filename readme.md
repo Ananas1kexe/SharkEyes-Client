@@ -1,9 +1,5 @@
 # 🦈 SharkEyes Client
 
-
-## start here
-[`Start Here`](CONTRIBUTING.md)
-
 **Advanced client-side bot detection and form protection**
 
 SharkEyes Client is a lightweight JavaScript solution that protects your forms from automated attacks by analyzing behavioral patterns in real-time. All verification decisions are made server-side to ensure security and prevent bypass attempts.
@@ -48,7 +44,7 @@ Add the `data-sharkeyes` attribute to any form for seamless, invisible protectio
 
 For explicit user verification with a checkbox interface:
 ```html
-<form action="/submit" method="POST" data-sharkeyes>
+<form action="/submit" method="POST">
   <input type="email" name="email" placeholder="Email" required>
   <input type="password" name="password" placeholder="Password" required>
   
@@ -66,115 +62,50 @@ For explicit user verification with a checkbox interface:
 **Widget Options:**
 - `data-theme`: `"light"` | `"dark"` | `"auto"` (default: `"auto"`)
 - `data-size`: `"normal"` | `"compact"` (default: `"normal"`)
-- `data-lang`: `"en"` | `"ru"` | `"he"` (default: `"en"`)
+- `data-lang`: `"en"` | `"ru"` | `"he"` | `"de"` (default: `"en"`)
 - `data-auto`: `"true"` | `"false"` - Auto-verify on page load (default: `"true"`)
 
 **Widget Features:**
 - 🎨 Light/Dark theme with auto-detection
-- 🌍 Multi-language support (English, Russian, Hebrew)
+- 🌍 Multi-language support (English, Russian, Hebrew, Deutsch)
 - 📱 Responsive design for mobile and desktop
-- ♿ Accessible with keyboard navigation
 - 🎯 Compact mode for tight spaces
 - ⚡ Auto-verification or manual click-to-verify
 
 ## 🔍 How It Works
 
-### Client-Side (Behavioral Analysis)
-1. **Interaction Monitoring**: Observes natural user interactions during the session
-2. **Behavior Patterns**: Analyzes timing, movement patterns, and interaction sequences
-3. **Anomaly Detection**: Identifies suspicious patterns typical of automation tools
-4. **Secure Transmission**: Sends behavioral signals to SharkEyes API for verification
+This script provides **lightweight bot detection** for form submissions.  
+It collects **minimal client-side signals** and sends them to the SharkEyes server for verification.  
+All critical bot-detection logic runs **server-side**, so the client **cannot bypass** it.  
 
-### Server-Side (Verification & Decision)
-5. **Pattern Analysis**: Advanced algorithms evaluate behavioral characteristics
-6. **Bot Detection**: Identifies automation signatures (headless browsers, scripting tools, bot frameworks)
-7. **Risk Scoring**: Calculates likelihood of automated activity
-8. **Decision**: Server returns **ALLOW** or **BLOCK** decision
-9. **Response**: Form submission proceeds or is blocked based on server decision
+### Key Principles
+- **Privacy First**: No typed input, no clicked element content, and no personal data is recorded.  
+- **Temporary Signals Only**: Events and browser/device signals are sent to the server **without storing anything locally**.  
+- **Server Makes the Decision**: Client only reports signals; server returns **ALLOW** or **BLOCK**.  
+- **No Tracking or Identifying Users**: Only patterns and environment data are analyzed.
 
-**⚠️ Important:** All verification logic runs server-side. The client never makes the final decision, preventing bypass attempts through browser manipulation or script modification.
+---
 
-## 📊 What We Analyze
+## 📊 Data Collected (Client-Side Only)
 
-SharkEyes analyzes behavioral signals to detect automated activity, **NOT to track or identify individual users**:
+| Category | Data Collected | Purpose | Privacy Note |
+|----------|----------------|---------|--------------|
+| **Mouse / Click / Scroll / Keyboard / Touch / Paste** | Event type and timestamp (`mousemove`, `click`, `keydown`, `scroll`, `touchstart`, `touchmove`, `touchend`, `paste`, `input`, `focus`, `blur`) | Detect natural human interaction patterns | ❌ Only timing and type; **no input or content is recorded** |
+| **Browser Info** | `navigator.userAgent`, `navigator.webdriver`, platform, touch support, WebGL vendor/renderer, plugin count, Chrome object presence | Identify browser consistency, detect headless or bot frameworks | ❌ Generic properties only; **no personal data** |
+| **Automation Detection** | Flags for WebDriver, Playwright, headless browser | Detect automated tools | ❌ Boolean flags only; **does not reveal user actions** |
+| **Storage Test** | LocalStorage test key (`sharkeyes_temp_storage_test`) | Check browser storage availability | ❌ Temporary only, removed immediately; **existing storage not accessed** |
+| **Form Metadata** | Number of input fields, screen width/height, window vs screen size | Analyze form complexity and environment | ❌ Counts and dimensions only; **no field content** |
+| **Session Timing** | Time on page, event intervals | Detect bots submitting instantly | ❌ Duration only; **no personal content** |
+| **Client Fingerprints** | Browser engine and brand (`chromium`, `gecko`, `webkit`, `firefox`, `chrome`, `edge`, `brave`, `opera`, `safari`) | Identify browser family and detect spoofing | ❌ Generic engine info only |
 
-| Signal Type | What We Check | Why It Matters |
-|-------------|---------------|----------------|
-| **Interaction Patterns** | Natural mouse movements, click timing, scroll behavior | Bots move in straight lines or perfectly timed patterns; humans are organic and variable |
-| **Session Behavior** | Time spent on page, interaction frequency, event sequences | Bots submit forms instantly; humans browse, read, and interact naturally |
-| **Browser Consistency** | Basic browser information consistency | Bots often have mismatched or spoofed browser configurations |
-| **Automation Indicators** | Presence of automation tool signatures | Detects Puppeteer, Playwright, Selenium, and other bot frameworks |
-| **Environment Anomalies** | Headless browser detection, missing browser features | Automated tools lack normal browser capabilities |
+---
 
-## 🔬 Technical Details: What Data Points We Check
-
-Below is a detailed breakdown of **what specific browser properties we check** and **why each is important for bot detection**. We emphasize that we **do not read, store, or access any personal content**—we only check for the **presence and consistency** of browser features.
-
-### Browser Environment Checks
-
-| Data Point | What We Check | Purpose | Privacy Note |
-|------------|---------------|---------|--------------|
-| **User Agent** | Browser identification string | Verify browser consistency and detect spoofed identities | Standard browser info, not personal data |
-| **Platform** | Operating system name | Cross-check with other signals for consistency | Generic OS info (e.g., "Win32", "MacIntel") |
-| **Languages** | Browser language preferences | Verify natural browser configuration | Language settings only, not content |
-| **Timezone** | System timezone setting | Detect timezone/location mismatches typical of bots | Timezone identifier only (e.g., "America/New_York") |
-| **Vendor** | Browser vendor string | Identify browser manufacturer | Public browser property |
-
-### Hardware & Capability Checks
-
-| Data Point | What We Check | Purpose | Privacy Note |
-|------------|---------------|---------|--------------|
-| **Hardware Concurrency** | Number of CPU cores | Detect virtual environments and emulators | Hardware spec only, no personal data |
-| **Device Memory** | RAM available to browser | Identify virtual machines and automation environments | Memory amount only, no usage data |
-| **Screen Resolution** | Display width/height | Detect headless browsers with fake resolutions | Screen size only, not screen content |
-| **Pixel Ratio** | Display pixel density | Verify device consistency | Display property only |
-| **Touch Support** | Touch capability detection | Verify mobile device authenticity | Boolean check only |
-| **Window vs Screen Size** | Browser window dimensions vs screen | Detect automation tools running in hidden windows | Dimensions only, not window content |
-
-### Browser Feature Checks
-
-| Data Point | What We Check | Purpose | Privacy Note |
-|------------|---------------|---------|--------------|
-| **Cookie Enabled** | Whether cookies can be used | Bots often disable cookies; we check **availability only** | ✅ We check IF cookies work, **NOT cookie content** |
-| **Storage Test** | LocalStorage functionality | Verify browser has normal storage capabilities | ✅ We test with a temporary test value, **NOT read existing data** |
-| **WebGL Info** | Graphics renderer details | Detect headless browsers and virtual environments | GPU info only, used for consistency checks |
-| **Plugins Length** | Number of browser plugins | Headless browsers typically have 0 plugins | ✅ Plugin count only, **NOT plugin names or data** |
-| **Window.Chrome** | Presence of Chrome object | Verify Chromium-based browser authenticity | Boolean presence check |
-
-### Automation Detection
-
-| Data Point | What We Check | Purpose | Privacy Note |
-|------------|---------------|---------|--------------|
-| **navigator.webdriver** | WebDriver automation flag | Directly indicates Selenium/WebDriver usage | Standard automation detection flag |
-| **Playwright Detection** | Playwright framework signatures | Detect Playwright automation tool | Checks for framework-specific properties |
-| **Browser Type Detection** | Browser engine and brand | Identify browser family and detect spoofing | Browser identification only |
-
-### Permission API Checks
-
-| Data Point | What We Check | Purpose | Privacy Note |
-|------------|---------------|---------|--------------|
-| **Permissions State** | Camera, microphone, geolocation, notifications permission status | Verify browser has functional Permission API | ✅ We check permission **state** (granted/denied/prompt), **NOT access actual devices or location** |
-
-### Behavioral Event Tracking
-
-| Event Type | What We Record | Purpose | Privacy Note |
-|------------|----------------|---------|--------------|
-| **Mouse Move** | Coordinates and timestamp | Detect natural human movement patterns | ✅ Movement patterns only, **NOT what you're clicking on** |
-| **Click** | Coordinates and timestamp | Analyze click patterns and timing | ✅ Click timing only, **NOT what elements you click** |
-| **Scroll** | Timestamp only | Verify natural scrolling behavior | ✅ Scroll timing only, **NOT page content** |
-| **Keyboard** | Timestamp only | Detect natural typing patterns | ✅ Timing only, **NOT what you type** |
-| **Touch Events** | Touch coordinates and timestamp | Mobile device interaction verification | ✅ Touch patterns only, **NOT touched content** |
-| **Focus/Blur** | Timestamp only | Track window focus patterns | ✅ Timing only, **NOT focused content** |
-| **Input** | Timestamp only | Detect form interaction | ✅ Timing only, **NOT input values** |
-| **Paste** | Timestamp only | Identify paste actions | ✅ Event timing only, **NOT pasted content** |
-
-### Session Metadata
-
-| Data Point | What We Check | Purpose | Privacy Note |
-|------------|---------------|---------|--------------|
-| **Time on Page** | Duration since page load | Bots submit forms instantly | Time duration only |
-| **Input Count** | Number of form fields | Form complexity analysis | Field count only, not field content |
-| **Headless Flag** | Headless browser detection | Identify automation environments | Boolean flag |
+### 🔬 Summary
+- **We do NOT collect or store any typed text or clicks on content.**  
+- **All event data is ephemeral** and sent securely to the server for verification.  
+- **No cookies, localStorage content, or personal identifiers** are read or saved.  
+- Client-side collection is **minimal**; server performs all scoring and final decisions.  
+- Designed to **prevent bots** while fully preserving user privacy.
 
 
 ### 🔒 Privacy & Data Handling
@@ -211,7 +142,7 @@ The verification process is completely stateless—once the API returns a result
 - "I'm not a robot" checkbox interface
 - Real-time verification feedback
 - Customizable appearance and behavior
-- Multiple language support (English, Russian, Hebrew)
+- Multiple language support (English, Russian, Hebrew, Deutsch)
 - Dark/Light theme with auto-detection
 - Auto-verification or manual click-to-verify options
 
@@ -228,16 +159,7 @@ The verification process is completely stateless—once the API returns a result
 - **WebKit engine**: Safari
 - Works across all modern browsers and devices
 
-## 🛡️ API Endpoints
 
-- **Token Request**: `https://api.sharkeyes.dev/api/v1/token`
-  - Returns a server-generated session token
-  - Sets HttpOnly security cookie
-
-- **Verification**: `https://api.sharkeyes.dev/api/v1/verify`
-  - Analyzes behavioral signals **server-side**
-  - Returns verification result: **ALLOW** or **BLOCK**
-  - Includes Sky ID (session identifier) and confidence score
 
 ## ⚙️ Configuration
 
@@ -250,7 +172,7 @@ Customize with data attributes:
 <div data-sharkeyes-captcha 
      data-theme="dark"          <!-- Theme: light/dark/auto -->
      data-size="compact"        <!-- Size: normal/compact -->
-     data-lang="ru"             <!-- Language: en/ru/he -->
+     data-lang="de"             <!-- Language: en/ru/he/de -->
      data-auto="false">         <!-- Auto-verify: true/false -->
 </div>
 ```
@@ -282,12 +204,12 @@ When verification fails, you can handle the response:
 </div>
 ```
 
-### Compact Light Theme (Russian)
+### Compact Light Theme (Deutsch)
 ```html
 <div data-sharkeyes-captcha 
      data-theme="light"
      data-size="compact"
-     data-lang="ru">
+     data-lang="de">
 </div>
 ```
 
@@ -315,12 +237,13 @@ See [LICENSE](LICENSE) file for details.
 ## 🔗 Links
 
 - [Official Website](https://sharkeyes.dev/)
-- [API Documentation](https://docs.sharkeyes.dev/)
-- [Report Issues](https://github.com/sharkeyes/sharkeyes-client/issues)
+- [API Documentation](https://sharkeyes.dev/docs/)
+- [Report Issues](https://github.com/Ananas1kexe/SharkEyes-Client/issues)
 
 ## 💬 Support
 
-For questions or support, contact us at [support@sharkeyes.dev](mailto:support@sharkeyes.dev)
+For questions or support, contact us at
+[sharkeyes.dev/feedback/](link:support@sharkeyes.dev)
 
 ---
 
