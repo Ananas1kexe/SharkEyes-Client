@@ -64,11 +64,11 @@ SharkEyes collects **temporary technical and behavioral signals** during a singl
 
 SharkEyes explicitly does **not** collect:
 
-- ❌ Passwords or form field values  
-- ❌ Personally identifiable information (PII)  
-- ❌ Cookie contents or localStorage data  
-- ❌ Browsing history  
-- ❌ Cross-site tracking identifiers  
+- Passwords or form field values  
+- Personally identifiable information (PII)  
+- Cookie contents or localStorage data  
+- Browsing history  
+- Cross-site tracking identifiers  
 
 ---
 
@@ -155,7 +155,7 @@ Known limitations include:
 
 For security-related questions or concerns:
 
-📧 **sharkeyes.dev/report/**
+**sharkeyes.dev/report/**
 
 ---
 
