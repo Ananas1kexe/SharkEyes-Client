@@ -1,8 +1,8 @@
 {
   "name": "SharkEyes",
-  "version": "1.0.0-MVP",
+  "version": "1.0.0-BETA",
   "build_number": 1,
-  "release_date": "2026-01-18",
+  "release_date": "2026-02-1",
   "is_stable": true,
   "repository_status": {
     "version": 1,
