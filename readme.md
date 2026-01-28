@@ -1,14 +1,14 @@
-# 🦈 SharkEyes Client
+# SharkEyes Client
 
 **Advanced client-side bot detection and form protection**
 
 SharkEyes Client is a lightweight JavaScript solution that protects your forms from automated attacks by analyzing behavioral patterns in real-time. All verification decisions are made server-side to ensure security and prevent bypass attempts.
 
-## 📦 Current Version
+## Current Version
 
 See [`versions.json`](versions.json) for the latest stable release.
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Installation
 
@@ -66,13 +66,13 @@ For explicit user verification with a checkbox interface:
 - `data-auto`: `"true"` | `"false"` - Auto-verify on page load (default: `"true"`)
 
 **Widget Features:**
-- 🎨 Light/Dark theme with auto-detection
-- 🌍 Multi-language support (English, Russian, Hebrew, Deutsch)
-- 📱 Responsive design for mobile and desktop
-- 🎯 Compact mode for tight spaces
-- ⚡ Auto-verification or manual click-to-verify
+- Light/Dark theme with auto-detection
+- Multi-language support (English, Russian, Hebrew, Deutsch)
+- Responsive design for mobile and desktop
+- Compact mode for tight spaces
+- Auto-verification or manual click-to-verify
 
-## 🔍 How It Works
+## How It Works
 
 This script provides **lightweight bot detection** for form submissions.  
 It collects **minimal client-side signals** and sends them to the SharkEyes server for verification.  
@@ -86,7 +86,7 @@ All critical bot-detection logic runs **server-side**, so the client **cannot by
 
 ---
 
-## 📊 Data Collected (Client-Side Only)
+## Data Collected (Client-Side Only)
 
 | Category | Data Collected | Purpose | Privacy Note |
 |----------|----------------|---------|--------------|
@@ -100,7 +100,7 @@ All critical bot-detection logic runs **server-side**, so the client **cannot by
 
 ---
 
-### 🔬 Summary
+### Summary
 - **We do NOT collect or store any typed text or clicks on content.**  
 - **All event data is ephemeral** and sent securely to the server for verification.  
 - **No cookies, localStorage content, or personal identifiers** are read or saved.  
@@ -108,7 +108,7 @@ All critical bot-detection logic runs **server-side**, so the client **cannot by
 - Designed to **prevent bots** while fully preserving user privacy.
 
 
-### 🔒 Privacy & Data Handling
+### Privacy & Data Handling
 
 **We prioritize your privacy:**
 
@@ -129,7 +129,7 @@ All critical bot-detection logic runs **server-side**, so the client **cannot by
 
 The verification process is completely stateless—once the API returns a result (ALLOW/BLOCK), all data is immediately discarded.
 
-## 🎯 Features
+## Features
 
 ### Invisible Mode
 - Zero user friction
@@ -161,7 +161,7 @@ The verification process is completely stateless—once the API returns a result
 
 
 
-## ⚙️ Configuration
+## Configuration
 
 ### Invisible Mode
 Zero configuration required. Simply add `data-sharkeyes` attribute.
@@ -185,7 +185,7 @@ When verification fails, you can handle the response:
 
 **Visible Widget**: Shows error state in the checkbox with option to retry
 
-## 🔧 Browser Support
+## Browser Support
 
 - ✅ Chrome/Chromium 
 - ✅ Firefox 
@@ -194,7 +194,7 @@ When verification fails, you can handle the response:
 - ✅ Opera 
 - ✅ Mobile browsers (iOS Safari, Chrome Mobile)
 
-## 🎨 Widget Customization Examples
+## Widget Customization Examples
 
 ### Dark Theme with Manual Verification
 ```html
@@ -221,7 +221,7 @@ When verification fails, you can handle the response:
 </div>
 ```
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please:
 
@@ -230,21 +230,21 @@ We welcome contributions! Please:
 3. Make your changes
 4. Submit a pull request
 
-## 📄 License
+## License
 
 See [LICENSE](LICENSE) file for details.
 
-## 🔗 Links
+## Links
 
 - [Official Website](https://sharkeyes.dev/)
 - [API Documentation](https://sharkeyes.dev/docs/)
 - [Report Issues](https://github.com/Ananas1kexe/SharkEyes-Client/issues)
 
-## 💬 Support
+## Support
 
 For questions or support, contact us at
 [sharkeyes.dev/feedback/](link:support@sharkeyes.dev)
 
 ---
 
-**Made with 🦈 by the SharkEyes Team**
+**Made in Israel by the SharkEyes Team**
