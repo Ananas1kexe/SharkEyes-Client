@@ -90,13 +90,13 @@ All critical bot-detection logic runs **server-side**, so the client **cannot by
 
 | Category | Data Collected | Purpose | Privacy Note |
 |----------|----------------|---------|--------------|
-| **Mouse / Click / Scroll / Keyboard / Touch / Paste** | Event type and timestamp (`mousemove`, `click`, `keydown`, `scroll`, `touchstart`, `touchmove`, `touchend`, `paste`, `input`, `focus`, `blur`) | Detect natural human interaction patterns | ❌ Only timing and type; **no input or content is recorded** |
-| **Browser Info** | `navigator.userAgent`, `navigator.webdriver`, platform, touch support, WebGL vendor/renderer, plugin count, Chrome object presence | Identify browser consistency, detect headless or bot frameworks | ❌ Generic properties only; **no personal data** |
-| **Automation Detection** | Flags for WebDriver, Playwright, headless browser | Detect automated tools | ❌ Boolean flags only; **does not reveal user actions** |
-| **Storage Test** | LocalStorage test key (`sharkeyes_temp_storage_test`) | Check browser storage availability | ❌ Temporary only, removed immediately; **existing storage not accessed** |
-| **Form Metadata** | Number of input fields, screen width/height, window vs screen size | Analyze form complexity and environment | ❌ Counts and dimensions only; **no field content** |
-| **Session Timing** | Time on page, event intervals | Detect bots submitting instantly | ❌ Duration only; **no personal content** |
-| **Client Fingerprints** | Browser engine and brand (`chromium`, `gecko`, `webkit`, `firefox`, `chrome`, `edge`, `brave`, `opera`, `safari`) | Identify browser family and detect spoofing | ❌ Generic engine info only |
+| **Mouse / Click / Scroll / Keyboard / Touch / Paste** | Event type and timestamp (`mousemove`, `click`, `keydown`, `scroll`, `touchstart`, `touchmove`, `touchend`, `paste`, `input`, `focus`, `blur`) | Detect natural human interaction patterns | Only timing and type; **no input or content is recorded** |
+| **Browser Info** | `navigator.userAgent`, `navigator.webdriver`, platform, touch support, WebGL vendor/renderer, plugin count, Chrome object presence | Identify browser consistency, detect headless or bot frameworks | Generic properties only; **no personal data** |
+| **Automation Detection** | Flags for WebDriver, Playwright, headless browser | Detect automated tools |  Boolean flags only; **does not reveal user actions** |
+| **Storage Test** | LocalStorage test key (`sharkeyes_temp_storage_test`) | Check browser storage availability | Temporary only, removed immediately; **existing storage not accessed** |
+| **Form Metadata** | Number of input fields, screen width/height, window vs screen size | Analyze form complexity and environment | Counts and dimensions only; **no field content** |
+| **Session Timing** | Time on page, event intervals | Detect bots submitting instantly | Duration only; **no personal content** |
+| **Client Fingerprints** | Browser engine and brand (`chromium`, `gecko`, `webkit`, `firefox`, `chrome`, `edge`, `brave`, `opera`, `safari`) | Identify browser family and detect spoofing | Generic engine info only |
 
 ---
 
@@ -120,12 +120,12 @@ All critical bot-detection logic runs **server-side**, so the client **cannot by
 - ✅ **Bot Detection Only** - Data is used solely to distinguish bots from humans, not to identify users
 
 **What we DON'T do:**
-- ❌ Store personal information
-- ❌ Track users across websites
-- ❌ Create persistent fingerprints
-- ❌ Build user profiles
-- ❌ Sell or share data
-- ❌ Use data for advertising
+- Store personal information
+- Track users across websites
+- Create persistent fingerprints
+- Build user profiles
+- Sell or share data
+- Use data for advertising
 
 The verification process is completely stateless—once the API returns a result (ALLOW/BLOCK), all data is immediately discarded.
 
@@ -187,12 +187,12 @@ When verification fails, you can handle the response:
 
 ## Browser Support
 
-- ✅ Chrome/Chromium 
-- ✅ Firefox 
-- ✅ Safari 
-- ✅ Edge 
-- ✅ Opera 
-- ✅ Mobile browsers (iOS Safari, Chrome Mobile)
+- Chrome/Chromium 
+- Firefox 
+- Safari 
+- Edge 
+- Opera 
+- Mobile browsers (iOS Safari, Chrome Mobile)
 
 ## Widget Customization Examples
 
